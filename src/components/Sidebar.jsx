@@ -150,7 +150,6 @@ export default function Sidebar({ isOpen, onClose }) {
             ✓ المنظومة مثبتة على الجهاز
           </div>
         )}
-
         {/* زر تسجيل الخروج */}
         <button
           id="btn-logout"
@@ -163,5 +162,6 @@ export default function Sidebar({ isOpen, onClose }) {
         </button>
       </footer>
     </aside>
-  );
+  </>
+);
 }
