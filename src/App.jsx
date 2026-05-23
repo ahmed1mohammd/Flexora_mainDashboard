@@ -3,7 +3,9 @@
 // يحتوي على: نظام التوجيه، الحماية، التخطيط الأساسي
 // ============================================================
 
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -26,25 +28,38 @@ const ProtectedRoute = ({ children }) => {
 };
 
 // ── تخطيط لوحة التحكم مع الشريط الجانبي ─────────────────
-const DashboardLayout = ({ children }) => (
-  <div className="app-layout" dir="rtl">
-    <Sidebar />
-    <main className="main-content" role="main">
-      <div className="top-bar">
-        <div className="top-bar-title">منظومة فليكسورا الإدارية</div>
-        <div className="top-bar-meta">
-          <div className="top-bar-user" id="top-bar-user-btn">
-            <div className="user-avatar">م</div>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>
-              {localStorage.getItem('flexora_user_name') || 'المدير'}
-            </span>
+const DashboardLayout = ({ children }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  return (
+    <div className="app-layout" dir="rtl">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <main className="main-content" role="main">
+        <div className="top-bar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button 
+              className="mobile-menu-btn d-md-none btn btn-ghost" 
+              onClick={() => setIsSidebarOpen(true)}
+              style={{ padding: '8px' }}
+            >
+              <Menu size={24} />
+            </button>
+            <div className="top-bar-title">منظومة فليكسورا الإدارية</div>
+          </div>
+          <div className="top-bar-meta">
+            <div className="top-bar-user" id="top-bar-user-btn">
+              <div className="user-avatar">م</div>
+              <span className="user-name-text" style={{ fontSize: '0.85rem', fontWeight: 600 }}>
+                {localStorage.getItem('flexora_user_name') || 'المدير'}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      {children}
-    </main>
-  </div>
-);
+        {children}
+      </main>
+    </div>
+  );
+};
 
 // ── الشجرة الجذرية للتوجيه ───────────────────────────────
 export default function App() {

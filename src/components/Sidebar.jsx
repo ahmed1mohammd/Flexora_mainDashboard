@@ -47,7 +47,9 @@ const getNavLinks = () => {
   return links;
 };
 
-export default function Sidebar() {
+import { X } from 'lucide-react';
+
+export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const { isInstallable, isInstalled, triggerInstall } = usePWAInstall();
 
@@ -70,7 +72,26 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="sidebar">
+    <>
+      {/* Overlay for mobile when sidebar is open */}
+      {isOpen && (
+        <div 
+          className="sidebar-overlay" 
+          onClick={onClose}
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 998
+          }}
+        />
+      )}
+      <aside className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
+        <button 
+          className="sidebar-close-btn d-md-none btn btn-ghost" 
+          onClick={onClose}
+          style={{ position: 'absolute', left: '10px', top: '10px', padding: '5px' }}
+        >
+          <X size={20} />
+        </button>
       {/* الشعار */}
       <div className="sidebar-logo-wrap">
         <img
