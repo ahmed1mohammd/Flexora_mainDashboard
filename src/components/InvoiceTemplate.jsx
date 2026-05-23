@@ -20,7 +20,7 @@ export default function InvoiceTemplate({ transaction, onClose }) {
   const subEndDate = transaction.gym?.subscriptionEnd ? new Date(transaction.gym.subscriptionEnd).toLocaleDateString('ar-EG') : 'غير محدد';
   // Fetch Platform Settings dynamically on mount
   React.useEffect(() => {
-    fetch('http://localhost:3000/public/settings')
+    fetch('https://elegant-playfulness-production-f153.up.railway.app/public/settings')
       .then(res => res.json())
       .then(data => {
         if (data?.data?.settings) {
