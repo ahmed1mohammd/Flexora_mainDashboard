@@ -38,7 +38,7 @@ export default function BranchesPage() {
       // إضافة gymName من الـ relation المضمّنة
       setBranches(sorted.map(b => ({
         ...b,
-        gymName: b.gym?.gymName || b.gym?.name || '—'
+        gymName: b.gym?.name || b.gym?.ownerName || '—'
       })));
     } catch (err) {
       setError(err.response?.data?.message || 'فشل جلب بيانات الفروع');
