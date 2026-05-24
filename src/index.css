@@ -473,7 +473,8 @@ body {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
+  line-height: 1.25;
 }
 
 .data-table thead {
@@ -482,11 +483,11 @@ body {
 }
 
 .data-table thead th {
-  padding: 16px 20px;
+  padding: 6px 12px;
   text-align: right;
   color: var(--color-text-muted);
-  font-weight: 600;
-  font-size: 0.775rem;
+  font-weight: 700;
+  font-size: 0.7rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -506,14 +507,15 @@ body {
 }
 
 .data-table tbody td {
-  padding: 16px 20px;
+  padding: 6px 12px;
   color: var(--color-text);
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 .table-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   justify-content: flex-end;
 }
