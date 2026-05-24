@@ -60,7 +60,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: /^http:\/\/localhost:3000\/.*/i,
+            urlPattern: /^https:\/\/elegant-playfulness-production-f153\.up\.railway\.app\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'flexora-api-cache',
