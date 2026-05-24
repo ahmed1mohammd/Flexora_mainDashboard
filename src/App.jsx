@@ -17,6 +17,7 @@ import UsersPage from './pages/UsersPage';
 import ActivityPage from './pages/ActivityPage';
 import PlatformExpensesPage from './pages/PlatformExpensesPage';
 import SettingsPage from './pages/SettingsPage';
+import BranchesPage from './pages/BranchesPage';
 
 // ── حارس المسار المحمي ────────────────────────────────────
 const ProtectedRoute = ({ children }) => {
@@ -150,6 +151,16 @@ export default function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <TeamPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/branches"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <BranchesPage />
               </DashboardLayout>
             </ProtectedRoute>
           }

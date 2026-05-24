@@ -5,7 +5,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, CreditCard, LogOut, Settings,
-  Activity, Building2, Download, ShieldCheck, DollarSign
+  Activity, Building2, Download, ShieldCheck, DollarSign, GitBranch
 } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import Swal from 'sweetalert2';
@@ -18,6 +18,7 @@ const NAV_LINKS = [
     items: [
       { to: '/dashboard', icon: LayoutDashboard, label: 'لوحة التحكم' },
       { to: '/gyms',      icon: Building2,       label: 'الصالات الرياضية' },
+      { to: '/branches',  icon: GitBranch,       label: 'إدارة الفروع' },
       { to: '/plans',     icon: CreditCard,      label: 'خطط الاشتراك' },
     ]
   },
