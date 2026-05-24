@@ -4,7 +4,7 @@
 // ============================================================
 
 import { useState } from 'react';
-import { CheckCircle, Snowflake, Ban, Search, RefreshCw, Printer } from 'lucide-react';
+import { CheckCircle, Snowflake, Ban, Search, RefreshCw, Printer, Trash2 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import axiosClient from '../api/axiosClient';
 
@@ -33,19 +33,44 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
 
   // ── تفعيل الصالة ──────────────────────────────────────────
   const handleActivate = async (gym) => {
+    let plans = [];
+    try {
+      const response = await axiosClient.get('/admin/saas-plans');
+      plans = response.data?.data?.plans || response.data?.plans || [];
+    } catch (e) {
+      console.error('Failed to fetch plans', e);
+    }
+
+    const plansOptions = plans.map(p => 
+      `<option value="${p.id}" ${gym.planId === p.id ? 'selected' : ''}>${p.planName} (${p.price} ج.م / ${p.durationInDays} يوم)</option>`
+    ).join('');
+
     const { value: formValues } = await Swal.fire({
       title: `تفعيل صالة: ${gym.name}`,
+      background: '#1A1A1A',
+      color: '#F5F5F5',
+      confirmButtonColor: '#E50914',
+      cancelButtonColor: '#333',
       html: `
-        <div style="display:flex;flex-direction:column;gap:12px;text-align:right">
+        <div style="display:flex;flex-direction:column;gap:12px;text-align:right" dir="rtl">
           <div>
-            <label style="font-size:0.8rem;color:#8A8A8A;display:block;margin-bottom:4px">مدة الاشتراك (بالأشهر)</label>
-            <input id="swal-duration" type="number" min="1" value="1"
-              class="swal2-input" style="margin:0;width:100%;text-align:right" placeholder="مثال: 3">
+            <label style="font-size:0.8rem;color:#8A8A8A;display:block;margin-bottom:4px">اختر باقة الاشتراك السحابي *</label>
+            <select id="swal-plan-id" class="swal2-input" style="margin:0;width:100%;text-align:right;background:#111;color:#fff;border:1px solid #333;border-radius:8px">
+              <option value="">-- تفعيل باقة مخصصة يدوياً --</option>
+              ${plansOptions}
+            </select>
           </div>
-          <div>
-            <label style="font-size:0.8rem;color:#8A8A8A;display:block;margin-bottom:4px">السعر المدفوع (جنيه)</label>
-            <input id="swal-price" type="number" min="0"
-              class="swal2-input" style="margin:0;width:100%;text-align:right" placeholder="مثال: 500">
+          <div id="manual-fields-container" style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <label style="font-size:0.8rem;color:#8A8A8A;display:block;margin-bottom:4px">مدة الاشتراك (بالأشهر)</label>
+              <input id="swal-duration" type="number" min="1" value="1"
+                class="swal2-input" style="margin:0;width:100%;text-align:right;background:#111;color:#fff;border:1px solid #333;border-radius:8px" placeholder="مثال: 3">
+            </div>
+            <div>
+              <label style="font-size:0.8rem;color:#8A8A8A;display:block;margin-bottom:4px">السعر المدفوع (جنيه)</label>
+              <input id="swal-price" type="number" min="0" value="500"
+                class="swal2-input" style="margin:0;width:100%;text-align:right;background:#111;color:#fff;border:1px solid #333;border-radius:8px" placeholder="مثال: 500">
+            </div>
           </div>
         </div>
       `,
@@ -53,15 +78,39 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
       confirmButtonText: 'تفعيل الآن',
       cancelButtonText: 'إلغاء',
       focusConfirm: false,
+      didOpen: () => {
+        const select = document.getElementById('swal-plan-id');
+        const manualContainer = document.getElementById('manual-fields-container');
+        if (select && manualContainer) {
+          select.addEventListener('change', () => {
+            if (select.value) {
+              manualContainer.style.display = 'none';
+            } else {
+              manualContainer.style.display = 'flex';
+            }
+          });
+          // Initial state
+          if (select.value) {
+            manualContainer.style.display = 'none';
+          }
+        }
+      },
       preConfirm: () => {
+        const planId   = document.getElementById('swal-plan-id').value;
         const duration = document.getElementById('swal-duration').value;
         const price    = document.getElementById('swal-price').value;
+        
+        if (planId) {
+          return { planId };
+        }
+        
         if (!duration || !price) {
-          Swal.showValidationMessage('يرجى تعبئة جميع الحقول المطلوبة');
+          Swal.showValidationMessage('يرجى اختيار باقة أو إدخال المدة والسعر يدوياً');
           return false;
         }
+        
         return {
-          durationInMonths: Number(duration), // ⚠ الباك اند يتوقع durationInMonths (أشهر)
+          durationInMonths: Number(duration),
           price: Number(price)
         };
       }
@@ -77,6 +126,9 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
         text: `تم تفعيل صالة "${gym.name}" بنجاح`,
         icon: 'success',
         confirmButtonText: 'ممتاز',
+        background: '#1A1A1A',
+        color: '#F5F5F5',
+        confirmButtonColor: '#E50914'
       });
       onRefresh?.();
     } catch (error) {
@@ -85,6 +137,9 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
         text: error.response?.data?.message || 'حدث خطأ غير متوقع أثناء التفعيل',
         icon: 'error',
         confirmButtonText: 'حسناً',
+        background: '#1A1A1A',
+        color: '#F5F5F5',
+        confirmButtonColor: '#E50914'
       });
     } finally {
       setActionLoading(null);
@@ -161,6 +216,51 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
     }
   };
 
+  // ── حذف الصالة نهائياً ─────────────────────────────────────
+  const handleDelete = async (gym) => {
+    const result = await Swal.fire({
+      title: 'حذف الصالة نهائياً؟',
+      html: `هل تؤكد حذف صالة <strong>"${gym.name}"</strong> بالكامل؟<br/><span style="color:var(--color-danger);font-size:0.8rem;display:block;margin-top:8px">تنبيه: سيتم مسح المالك والموظفين واللاعبين وكود الـ QR وكل السجلات المالية نهائياً ولا يمكن التراجع!</span>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، احذف نهائياً',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#333',
+      background: '#1A1A1A',
+      color: '#F5F5F5',
+    });
+
+    if (!result.isConfirmed) return;
+
+    setActionLoading(gym.id);
+    try {
+      await axiosClient.delete(`/admin/gyms/${gym.id}`);
+      await Swal.fire({
+        title: 'تم الحذف بنجاح',
+        text: `تم حذف صالة "${gym.name}" وكل بياناتها من النظام.`,
+        icon: 'success',
+        confirmButtonText: 'حسناً',
+        background: '#1A1A1A',
+        color: '#F5F5F5',
+        confirmButtonColor: '#E50914'
+      });
+      onRefresh?.();
+    } catch (error) {
+      Swal.fire({
+        title: 'خطأ في الحذف',
+        text: error.response?.data?.message || 'حدث خطأ أثناء محاولة حذف الصالة',
+        icon: 'error',
+        confirmButtonText: 'حسناً',
+        background: '#1A1A1A',
+        color: '#F5F5F5',
+        confirmButtonColor: '#E50914'
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   return (
     <div>
       {/* شريط البحث والتحكم */}
@@ -204,6 +304,7 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
               <th scope="col">المالك</th>
               <th scope="col">البريد الإلكتروني</th>
               <th scope="col">رقم الهاتف</th>
+              <th scope="col">الباقة الحالية</th>
               <th scope="col">تاريخ الانتهاء</th>
               <th scope="col">الحالة</th>
               <th scope="col">الإجراءات</th>
@@ -242,6 +343,16 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
                     <td>{gym.ownerName}</td>
                     <td style={{ direction: 'ltr', textAlign: 'right' }}>{gym.email}</td>
                     <td style={{ direction: 'ltr', textAlign: 'right' }}>{gym.phoneNumber}</td>
+                    <td>
+                      {gym.planName ? (
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontWeight: 700, color: 'var(--color-primary)' }}>{gym.planName}</span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--color-text-dim)' }}>{gym.planPrice} ج.م</span>
+                        </div>
+                      ) : (
+                        <span style={{ color: 'var(--color-text-dim)', fontSize: '0.8rem' }}>بدون باقة</span>
+                      )}
+                    </td>
                     <td>
                       {gym.subscriptionEnd
                         ? new Date(gym.subscriptionEnd).toLocaleDateString('ar-EG')
@@ -283,6 +394,15 @@ export default function GymTable({ gyms, loading, onRefresh, onPrint }) {
                               id={`btn-suspend-${gym.id}`}
                             >
                               <Ban size={14} />
+                            </button>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => handleDelete(gym)}
+                              title="حذف الصالة نهائياً"
+                              id={`btn-delete-${gym.id}`}
+                              style={{ background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#EF4444' }}
+                            >
+                              <Trash2 size={14} />
                             </button>
                             <button
                               className="btn btn-primary btn-sm"

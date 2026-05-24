@@ -4,7 +4,7 @@
 // لتغيير النطاق عند الإطلاق، عدّل السطر الأول فقط:
 // ============================================================
 
-export const API_BASE_URL = 'https://elegant-playfulness-production-f153.up.railway.app';
+export const API_BASE_URL = 'http://localhost:3000';
 
 import axios from 'axios';
 

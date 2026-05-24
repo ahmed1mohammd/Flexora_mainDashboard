@@ -15,6 +15,8 @@ const EMPTY_FORM = {
   price:          '',
   description:    '',
   featuresText:   '', // كل سطر = ميزة واحدة
+  maxReceptionists: '1',
+  maxCoaches:       '4',
 };
 
 // ── استخراج الفيتشرز بمرونة ───────────────────────────────
@@ -34,31 +36,59 @@ function PlanModal({ mode, plan, onClose, onSave, loading }) {
           durationInDays: String(plan.durationInDays || ''),
           price:          String(plan.price || ''),
           description:    plan.description || '',
-          featuresText:   getFeatures(plan).join('\n'),
+          maxReceptionists: String(plan.maxReceptionists !== undefined ? plan.maxReceptionists : '1'),
+          maxCoaches:       String(plan.maxCoaches !== undefined ? plan.maxCoaches : '4'),
         }
-      : EMPTY_FORM
+      : {
+          planName:       '',
+          durationInDays: '',
+          price:          '',
+          description:    '',
+          maxReceptionists: '1',
+          maxCoaches:       '4',
+        }
+  );
+
+  const [features, setFeatures] = useState(
+    mode === 'edit' && plan ? getFeatures(plan) : ['']
   );
 
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
+  const handleAddFeatureField = () => {
+    setFeatures((prev) => [...prev, '']);
+  };
+
+  const handleFeatureChange = (index, value) => {
+    setFeatures((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const handleRemoveFeatureField = (index) => {
+    setFeatures((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.planName || !form.durationInDays || !form.price) {
-      Swal.fire({ title: 'حقول مطلوبة', text: 'يرجى تعبئة الاسم والمدة والسعر', icon: 'warning', confirmButtonText: 'حسناً' });
+    if (!form.planName || !form.durationInDays || !form.price || !form.maxReceptionists || !form.maxCoaches) {
+      Swal.fire({ title: 'حقول مطلوبة', text: 'يرجى تعبئة كافة الحقول المطلوبة بما في ذلك أعداد الموظفين والمدربين الأقصى', icon: 'warning', confirmButtonText: 'حسناً' });
       return;
     }
-    const features = form.featuresText
-      .split('\n')
-      .map((f) => f.trim())
-      .filter(Boolean);
+    
+    const filteredFeatures = features.map(f => f.trim()).filter(Boolean);
 
     onSave({
       planName:       form.planName.trim(),
       durationInDays: Number(form.durationInDays),
       price:          Number(form.price),
       description:    form.description.trim(),
-      features,
+      features:       filteredFeatures,
+      maxReceptionists: Number(form.maxReceptionists),
+      maxCoaches:       Number(form.maxCoaches),
     });
   };
 
@@ -109,7 +139,7 @@ function PlanModal({ mode, plan, onClose, onSave, loading }) {
           </div>
 
           {/* الصف الثاني */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
             <div className="form-group">
               <label className="form-label" htmlFor="modal-plan-duration">المدة (بالأيام) *</label>
               <input
@@ -142,46 +172,85 @@ function PlanModal({ mode, plan, onClose, onSave, loading }) {
             </div>
           </div>
 
-          {/* حقل الفيتشرز */}
+          {/* الصف الثالث: حدود الموظفين والمدربين */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="modal-plan-max-receptionists">أقصى عدد موظفي استقبال *</label>
+              <input
+                id="modal-plan-max-receptionists"
+                name="maxReceptionists"
+                type="number"
+                min="0"
+                className="form-input"
+                placeholder="مثال: 2"
+                value={form.maxReceptionists}
+                onChange={handleChange}
+                required
+                disabled={loading}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="modal-plan-max-coaches">أقصى عدد مدربين *</label>
+              <input
+                id="modal-plan-max-coaches"
+                name="maxCoaches"
+                type="number"
+                min="0"
+                className="form-input"
+                placeholder="مثال: 4"
+                value={form.maxCoaches}
+                onChange={handleChange}
+                required
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          {/* مميزات الخطة الديناميكية */}
           <div className="form-group">
-            <label className="form-label" htmlFor="modal-plan-features">
-              مميزات الخطة
-              <span style={{ fontWeight: 400, color: 'var(--color-text-dim)', marginRight: '6px' }}>
-                (كل ميزة في سطر مستقل)
-              </span>
-            </label>
-            <textarea
-              id="modal-plan-features"
-              name="featuresText"
-              className="form-input"
-              rows={5}
-              placeholder={'مثال:\nأتمتة ملفات الأعضاء\nتوليد كود QR\nلوحة تقارير مالية'}
-              value={form.featuresText}
-              onChange={handleChange}
-              disabled={loading}
-              style={{ resize: 'vertical', lineHeight: 1.8, fontFamily: 'var(--font-primary)' }}
-            />
-            {/* معاينة الفيتشرز */}
-            {form.featuresText.trim() && (
-              <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {form.featuresText.split('\n').filter(f => f.trim()).map((f, i) => (
-                  <span key={i} style={{
-                    padding: '3px 10px',
-                    background: 'var(--color-primary-dim)',
-                    border: '1px solid rgba(229,9,20,0.25)',
-                    borderRadius: '20px',
-                    fontSize: '0.75rem',
-                    color: 'var(--color-primary)',
-                  }}>
-                    {f.trim()}
-                  </span>
-                ))}
-              </div>
-            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="form-label" style={{ margin: 0 }}>مميزات الباقة السحابية *</label>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleAddFeatureField}
+                style={{ fontSize: '0.75rem', padding: '4px 8px', color: 'var(--color-primary)' }}
+                disabled={loading}
+              >
+                + إضافة ميزة جديدة
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '180px', overflowY: 'auto', paddingLeft: '4px', border: '1px solid var(--color-border)', borderRadius: '8px', padding: '8px', background: 'var(--color-bg-main)' }}>
+              {features.map((feature, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder={`الميزة رقم ${idx + 1} (مثال: لوحة فروع مستقلة)`}
+                    value={feature}
+                    onChange={(e) => handleFeatureChange(idx, e.target.value)}
+                    disabled={loading}
+                    style={{ flex: 1, margin: 0 }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleRemoveFeatureField(idx)}
+                    disabled={loading || features.length <= 1}
+                    style={{ padding: '8px', background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.2)', color: '#EF4444', height: '38px', minWidth: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    title="حذف الميزة"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* أزرار الحفظ */}
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '16px' }}>
             <button type="button" className="btn btn-ghost" onClick={onClose} disabled={loading}>
               إلغاء
             </button>
@@ -382,7 +451,7 @@ export default function PlansGrid({ plans, loading, onRefresh }) {
               {/* ── المدة + تكلفة شهرية ── */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
-                marginBottom: '20px',
+                marginBottom: '12px',
                 fontSize: '0.85rem', color: 'var(--color-text-muted)',
               }}>
                 <Clock size={14} />
@@ -394,6 +463,22 @@ export default function PlansGrid({ plans, loading, onRefresh }) {
                   border: '1px solid var(--color-border)',
                 }}>
                   ≈ {(plan.price / (plan.durationInDays / 30)).toFixed(0)} ج/شهر
+                </span>
+              </div>
+
+              {/* ── حدود الموظفين والمدربين ── */}
+              <div style={{
+                display: 'flex', gap: '8px', marginBottom: '20px', fontSize: '0.78rem'
+              }}>
+                <span style={{
+                  padding: '4px 8px', background: 'rgba(229, 9, 20, 0.05)', border: '1px solid rgba(229, 9, 20, 0.15)', borderRadius: '6px', color: 'var(--color-primary)'
+                }}>
+                  أقصى موظفي استقبال: {plan.maxReceptionists ?? 1}
+                </span>
+                <span style={{
+                  padding: '4px 8px', background: 'rgba(229, 9, 20, 0.05)', border: '1px solid rgba(229, 9, 20, 0.15)', borderRadius: '6px', color: 'var(--color-primary)'
+                }}>
+                  أقصى مدربين: {plan.maxCoaches ?? 4}
                 </span>
               </div>
 
