@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from './components/Sidebar';
+import PWAInstallBanner from './components/PWAInstallBanner';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -59,6 +60,7 @@ const DashboardLayout = ({ children }) => {
 export default function App() {
   return (
     <BrowserRouter>
+      <PWAInstallBanner />
       <Routes>
         {/* المسار الجذري — إعادة توجيه */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
