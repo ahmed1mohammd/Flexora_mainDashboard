@@ -38,13 +38,6 @@ const DashboardLayout = ({ children }) => {
       <main className="main-content" role="main">
         <div className="top-bar">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button 
-              className="mobile-menu-btn d-md-none btn btn-ghost" 
-              onClick={() => setIsSidebarOpen(true)}
-              style={{ padding: '8px' }}
-            >
-              <Menu size={24} />
-            </button>
             <div className="top-bar-title">منظومة فليكسورا الإدارية</div>
           </div>
           <div className="top-bar-meta">

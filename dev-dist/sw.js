@@ -81,13 +81,13 @@ define(['./workbox-290dd570'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.f9gimk924vg"
+    "revision": "0.jg2kpte38uo"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/^http:\/\/localhost:3000\/.*/i, new workbox.NetworkFirst({
+  workbox.registerRoute(/^https:\/\/elegant-playfulness-production-f153\.up\.railway\.app\/.*/i, new workbox.NetworkFirst({
     "cacheName": "flexora-api-cache",
     "networkTimeoutSeconds": 10,
     plugins: [new workbox.ExpirationPlugin({

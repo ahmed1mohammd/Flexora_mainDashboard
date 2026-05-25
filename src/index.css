@@ -5,50 +5,36 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap');
 
-/* ─── متغيرات النظام ─────────────────────────────────────── */
+/* ─── متغيرات النظام (Premium Dark Theme) ────────────────────────────────── */
 :root {
-  --color-bg-main:      #ffffff;
-  --color-surface:      #f8f8f8;
-  --color-surface-2:    #ffffff;
-  --color-border:       rgba(0, 0, 0, 0.1);
-  --color-border-glow:  rgba(229, 9, 20, 0.3);
+  --color-bg-main:      #0c0c0e;
+  --color-surface:      #121214;
+  --color-surface-2:    #18181c;
+  --color-border:       rgba(255, 255, 255, 0.08);
+  --color-border-glow:  rgba(229, 9, 20, 0.4);
   --color-primary:      #E50914;
-  --color-primary-glow: #FF1A24;
-  --color-primary-dim:  rgba(229, 9, 20, 0.08);
-  --color-text:         #111111;
-  --color-text-muted:   #555555;
-  --color-text-dim:     #999999;
-  --color-success:      #16a34a;
-  --color-warning:      #d97706;
-  --color-frozen:       #0284c7;
-  --color-danger:       #dc2626;
+  --color-primary-glow: #FF2E38;
+  --color-primary-dim:  rgba(229, 9, 20, 0.15);
+  --color-text:         #f5f5f7;
+  --color-text-muted:   #a1a1a6;
+  --color-text-dim:     #6e6e73;
+  --color-success:      #30d158;
+  --color-warning:      #ff9f0a;
+  --color-frozen:       #0a84ff;
+  --color-danger:       #ff453a;
 
   --sidebar-width:      260px;
   --header-height:      70px;
   --border-radius:      12px;
   --border-radius-lg:   18px;
   --transition-base:    all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow-glow:        none;
-  --shadow-card:        none;
+  --shadow-glow:        0 0 20px rgba(229, 9, 20, 0.2);
+  --shadow-card:        0 8px 32px rgba(0, 0, 0, 0.5);
   --font-primary:       'Cairo', 'Tajawal', sans-serif;
 
   /* Grid pattern colors */
-  --grid-line:          rgba(0, 0, 0, 0.07);
+  --grid-line:          rgba(255, 255, 255, 0.03);
   --grid-size:          40px;
-}
-
-/* ─── Dark mode = same white theme ───────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-main:    #ffffff;
-    --color-surface:    #f8f8f8;
-    --color-surface-2:  #ffffff;
-    --color-border:     rgba(0, 0, 0, 0.1);
-    --color-text:       #111111;
-    --color-text-muted: #555555;
-    --color-text-dim:   #999999;
-    --grid-line:        rgba(0, 0, 0, 0.07);
-  }
 }
 
 /* ─── إعادة الضبط الشاملة ────────────────────────────────── */
@@ -105,7 +91,7 @@ body {
   top: 0;
   width: var(--sidebar-width);
   height: 100vh;
-  background: #ffffff;
+  background: var(--color-surface);
   border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -284,7 +270,7 @@ body {
 }
 
 .stat-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: 24px;
@@ -436,11 +422,12 @@ body {
   transform: none !important;
 }
 
-/* ─── البطاقات الزجاجية Glassmorphism ───────────────────── */
 .glass-card {
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* ─── رأس الصفحة ─────────────────────────────────────────── */
@@ -473,7 +460,7 @@ body {
 
 /* ─── جداول البيانات ─────────────────────────────────────── */
 .data-table-wrap {
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
@@ -700,7 +687,7 @@ select.form-input option {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ffffff;
+  background-color: var(--color-bg-main);
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
@@ -711,7 +698,7 @@ select.form-input option {
 .auth-card {
   width: 100%;
   max-width: 480px;
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: 40px;
@@ -849,7 +836,7 @@ select.form-input option {
   align-items: center;
   gap: 10px;
   padding: 8px 16px;
-  background: #f8f8f8;
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: 50px;
   cursor: pointer;
@@ -894,7 +881,7 @@ select.form-input option {
 .modal-card {
   width: 100%;
   max-width: 520px;
-  background: #ffffff;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-lg);
   padding: 32px;
@@ -940,7 +927,7 @@ select.form-input option {
 
 /* ─── تخصيص SweetAlert2 ───────────────────────────────────── */
 .swal2-popup {
-  background: #ffffff !important;
+  background: var(--color-surface) !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--border-radius-lg) !important;
   font-family: var(--font-primary) !important;
@@ -948,13 +935,13 @@ select.form-input option {
 }
 
 .swal2-title {
-  color: #111111 !important;
+  color: var(--color-text) !important;
   font-size: 1.3rem !important;
   font-weight: 700 !important;
 }
 
 .swal2-html-container {
-  color: #555555 !important;
+  color: var(--color-text-muted) !important;
   font-size: 0.9rem !important;
 }
 
@@ -967,15 +954,15 @@ select.form-input option {
 }
 
 .swal2-cancel {
-  background: #f8f8f8 !important;
+  background: var(--color-bg-main) !important;
   border: 1px solid var(--color-border) !important;
-  color: #555555 !important;
+  color: var(--color-text-muted) !important;
   border-radius: 8px !important;
   font-family: var(--font-primary) !important;
 }
 
 .swal2-cancel:hover {
-  background: #eeeeee !important;
+  background: var(--color-surface-2) !important;
 }
 
 /* ─── تحريكات الدخول ─────────────────────────────────────── */
